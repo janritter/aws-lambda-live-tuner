@@ -14,5 +14,6 @@ func (c *Changer) ChangeMemory(lambdaARN string, memory int) error {
 	if err != nil {
 		c.logger.Error("Failed to change memory: ", zap.Error(err))
 	}
-	return err
+	c.logger.Infof("Changed Lambda memory to: %d", memory)
+	return nil
 }
