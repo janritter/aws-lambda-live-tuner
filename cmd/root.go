@@ -4,9 +4,12 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"time"
 
 	"github.com/aws/aws-sdk-go/aws/session"
+	"github.com/aws/aws-sdk-go/service/cloudwatchlogs"
 	"github.com/aws/aws-sdk-go/service/lambda"
+	"github.com/janritter/aws-lambda-live-tuner/analyzer"
 	"github.com/janritter/aws-lambda-live-tuner/changer"
 	"github.com/spf13/cobra"
 
@@ -14,12 +17,15 @@ import (
 	"github.com/spf13/viper"
 
 	"go.uber.org/zap"
+
+	"golang.org/x/exp/maps"
 )
 
 var cfgFile string
 var minRequests int
 var memoryMin int
 var memoryMax int
+var waitTime int
 var memoryIncrement int
 var lambdaARN string
 
@@ -37,8 +43,12 @@ var rootCmd = &cobra.Command{
 
 		awsSession := session.Must(session.NewSession())
 		lambdaSvc := lambda.New(awsSession)
+		cloudwatchlogsSvc := cloudwatchlogs.New(awsSession)
 
 		changer := changer.NewChanger(lambdaSvc, sugaredLogger)
+		analyzer := analyzer.NewAnalyzer(cloudwatchlogsSvc, sugaredLogger)
+
+		durationResults := make(map[int]float64)
 
 		for memory := memoryMin; memory <= memoryMax; memory += memoryIncrement {
 			sugaredLogger.Infof("Starting test for %dMB", memory)
@@ -47,6 +57,31 @@ var rootCmd = &cobra.Command{
 			if err != nil {
 				os.Exit(1)
 			}
+
+			invocations := make(map[string]float64)
+			for len(invocations) < minRequests {
+				newInvocations, err := analyzer.CheckInvocations(lambdaARN, memory)
+				if err != nil {
+					os.Exit(1)
+				}
+
+				maps.Copy(invocations, newInvocations)
+
+				sugaredLogger.Infof("Total number of invocations analyzed for memory config: %d", len(invocations))
+				if len(invocations) > minRequests {
+					break
+				}
+
+				sugaredLogger.Infof("Waiting %d seconds before next analysis", waitTime)
+				time.Sleep(time.Duration(waitTime) * time.Second)
+			}
+
+			sugaredLogger.Infof("Calculating average duration for %dMB memory", memory)
+			average := calculateAverageOfMap(invocations)
+			durationResults[memory] = average
+
+			sugaredLogger.Infof("Average duration for %dMB memory: %f", memory, average)
+			sugaredLogger.Infof("Test for %dMB finished", memory)
 		}
 	},
 }
@@ -70,6 +105,7 @@ func init() {
 	rootCmd.PersistentFlags().IntVar(&memoryMax, "memory-max", 2048, "Upper memory limit for the optimization")
 	rootCmd.PersistentFlags().IntVar(&memoryIncrement, "memory-increment", 64, "Increments for the memory configuration added to the min value until the max value is reached. The increment must be a multiple of 64")
 	rootCmd.PersistentFlags().StringVar(&lambdaARN, "lambda-arn", "", "ARN of the Lambda function to optimize")
+	rootCmd.PersistentFlags().IntVar(&waitTime, "wait-time", 180, "Wait time in seconds between CloudWatch Log insights queries")
 }
 
 // initConfig reads in config file and ENV variables if set.
@@ -139,4 +175,12 @@ func validateMinRequests() {
 		log.Println("Minimum number of requests must be greater than 0")
 		os.Exit(1)
 	}
+}
+
+func calculateAverageOfMap(data map[string]float64) float64 {
+	var total float64 = 0.0
+	for _, value := range data {
+		total += value
+	}
+	return total / float64(len(data))
 }
