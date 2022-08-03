@@ -49,6 +49,7 @@ var rootCmd = &cobra.Command{
 		analyzer := analyzer.NewAnalyzer(cloudwatchlogsSvc, sugaredLogger)
 
 		durationResults := make(map[int]float64)
+		costResults := make(map[int]float64)
 
 		for memory := memoryMin; memory <= memoryMax; memory += memoryIncrement {
 			sugaredLogger.Infof("Starting test for %dMB", memory)
@@ -79,9 +80,17 @@ var rootCmd = &cobra.Command{
 			sugaredLogger.Infof("Calculating average duration for %dMB memory", memory)
 			average := calculateAverageOfMap(invocations)
 			durationResults[memory] = average
-
 			sugaredLogger.Infof("Average duration for %dMB memory: %f", memory, average)
+
+			cost := calculateCost(average, memory)
+			costResults[memory] = cost
+			sugaredLogger.Infof("Cost for %dMB memory: %f", memory, cost)
+
 			sugaredLogger.Infof("Test for %dMB finished", memory)
+		}
+
+		for memory, duration := range durationResults {
+			sugaredLogger.Infof("%dMB - Duration: %f - Cost: %f", memory, duration, costResults[memory])
 		}
 	},
 }
@@ -183,4 +192,12 @@ func calculateAverageOfMap(data map[string]float64) float64 {
 		total += value
 	}
 	return total / float64(len(data))
+}
+
+func calculateCost(duration float64, memory int) float64 {
+	gbSecond := 0.0000166667 // price for eu-central-1 x86
+
+	costForMemoryInMilliseconds := (gbSecond / 1024 * float64(memory)) / 1000
+
+	return costForMemoryInMilliseconds * duration
 }
