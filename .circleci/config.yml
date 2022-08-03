@@ -1,0 +1,97 @@
+version: 2.1
+
+orbs:
+  semantic-release: trustedshops-public/semantic-release@3.0.0
+
+jobs:
+  test:
+    docker:
+      - image: cimg/go:1.18
+    working_directory: ~/go/src/github.com/janritter/aws-lambda-live-tuner
+    steps:
+      - checkout
+      - run:
+          name: Install CodeClimate reporter
+          command: |
+            curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+            chmod +x ./cc-test-reporter
+      - run:
+          name: Install dependencies
+          command: |
+            make prepare
+      - run:
+          name: "Create a temp directory for artifacts"
+          command: |
+            mkdir -p /tmp/artifacts
+            mkdir -p /tmp/test-results
+      - run:
+          name: Run tests
+          command: |
+            PACKAGE_NAMES=$(go list ./... | circleci tests split --split-by=timings --timings-type=classname)
+            ./cc-test-reporter before-build
+            gotestsum --junitfile /tmp/test-results/gotestsum-report.xml -- -coverprofile=c.out $PACKAGE_NAMES
+             ./cc-test-reporter after-build --exit-code $?
+            go tool cover -html=c.out -o coverage.html
+            mv coverage.html /tmp/artifacts
+      - store_artifacts:
+          path: /tmp/artifacts
+      - store_test_results:
+          path: /tmp/test-results
+
+  build-release:
+    docker:
+      - image: cimg/go:1.18
+    working_directory: ~/go/src/github.com/janritter/aws-lambda-live-tuner
+    steps:
+      - checkout
+      - run:
+          name: Install goreleaser and cosign
+          command: |
+            go install github.com/goreleaser/goreleaser@latest
+            wget https://github.com/sigstore/cosign/releases/download/v1.8.0/cosign-linux-amd64
+            sudo mv cosign-linux-amd64 /usr/bin/cosign && sudo chmod +x /usr/bin/cosign
+      - run:
+          name: Get latest master version, which includes the git tag from the semantic-release step
+          command: |
+            git checkout main
+            git pull
+      - run:
+          name: Add cosign key
+          command: |
+            echo $COSIGN_KEY | base64 --decode > cosign.key
+      - run:
+          name: Run goreleaser
+          command: |
+            goreleaser release
+
+workflows:
+  version: 2
+  build:
+    jobs:
+      - test:
+          filters:
+            branches:
+              only:
+                - /feat\/.*/
+                - /chore\/.*/
+                - /fix\/.*/
+                - /test\/.*/
+                - /refactor\/.*/
+                - /perf\/.*/
+                - /dependabot\/.*/
+                - main
+      - semantic-release/with-changelog-github-config:
+          name: semantic-release
+          requires:
+            - test
+          filters:
+            branches:
+              only:
+                - main
+      - build-release:
+          requires:
+            - semantic-release
+          filters:
+            branches:
+              only:
+                - main

@@ -1,0 +1,11 @@
+# Go mod
+vendor/*
+
+# Build
+bin/*
+
+# vscode
+.vscode/*
+
+# Cosign
+cosign.key

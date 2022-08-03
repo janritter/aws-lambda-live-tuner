@@ -1,0 +1,42 @@
+before:
+  hooks:
+    - go mod tidy
+builds:
+  - env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+      - windows
+      - darwin
+    goarch:
+      - amd64
+      - arm64
+checksum:
+  name_template: "checksums.txt"
+snapshot:
+  name_template: "{{ incpatch .Version }}-next"
+
+brews:
+  - tap:
+      owner: "janritter"
+      name: "aws-lambda-live-tuner"
+
+    commit_msg_template: "Brew formula update for {{ .ProjectName }} version {{ .Tag }} [skip ci]"
+
+    folder: HomebrewFormula
+
+    homepage: "https://github.com/janritter/aws-lambda-live-tuner"
+
+    description: "Tool to optimize Lambda functions on real incoming events"
+
+    license: "MIT"
+
+    install: |
+      bin.install "aws-lambda-live-tuner"
+
+signs:
+  - cmd: cosign
+    stdin: "{{ .Env.COSIGN_PWD }}"
+    args:
+      ["sign-blob", "--key=cosign.key", "--output-signature=${signature}", "${artifact}"]
+    artifacts: all
