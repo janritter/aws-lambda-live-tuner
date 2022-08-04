@@ -1,9 +1,9 @@
 module github.com/janritter/aws-lambda-live-tuner
 
-go 1.18
+go 1.19
 
 require (
-	github.com/aws/aws-sdk-go v1.44.68
+	github.com/aws/aws-sdk-go v1.44.69
 	github.com/mitchellh/go-homedir v1.1.0
 	github.com/spf13/cobra v1.5.0
 	github.com/spf13/viper v1.12.0
