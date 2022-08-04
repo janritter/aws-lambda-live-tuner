@@ -2,7 +2,6 @@ package analyzer
 
 import (
 	"github.com/aws/aws-sdk-go/service/cloudwatchlogs/cloudwatchlogsiface"
-	"go.uber.org/zap"
 )
 
 type AnalyzerAPI interface {
@@ -11,12 +10,12 @@ type AnalyzerAPI interface {
 
 type Analyzer struct {
 	cloudwatch cloudwatchlogsiface.CloudWatchLogsAPI
-	logger     *zap.SugaredLogger
+	waitTime   int
 }
 
-func NewAnalyzer(cloudwatch cloudwatchlogsiface.CloudWatchLogsAPI, logger *zap.SugaredLogger) *Analyzer {
+func NewAnalyzer(cloudwatch cloudwatchlogsiface.CloudWatchLogsAPI, waitTime int) *Analyzer {
 	return &Analyzer{
 		cloudwatch: cloudwatch,
-		logger:     logger,
+		waitTime:   waitTime,
 	}
 }

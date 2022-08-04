@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"sort"
+	"strings"
 	"time"
 
 	"github.com/aws/aws-sdk-go/aws/session"
@@ -11,12 +13,11 @@ import (
 	"github.com/aws/aws-sdk-go/service/lambda"
 	"github.com/janritter/aws-lambda-live-tuner/analyzer"
 	"github.com/janritter/aws-lambda-live-tuner/changer"
+	"github.com/janritter/aws-lambda-live-tuner/helper"
 	"github.com/spf13/cobra"
 
 	homedir "github.com/mitchellh/go-homedir"
 	"github.com/spf13/viper"
-
-	"go.uber.org/zap"
 
 	"golang.org/x/exp/maps"
 )
@@ -34,30 +35,26 @@ var rootCmd = &cobra.Command{
 	Use:   "aws-lambda-live-tuner",
 	Short: "Tool to optimize Lambda functions on real incoming events",
 	Run: func(cmd *cobra.Command, args []string) {
-		logger, _ := zap.NewDevelopment()
-		defer logger.Sync()
-		sugaredLogger := logger.Sugar()
-
-		sugaredLogger.Info("Starting AWS Lambda Live Tuner")
+		helper.LogSuccess("Starting AWS Lambda Live Tuner")
 		validateInputs()
 
 		awsSession := session.Must(session.NewSession())
 		lambdaSvc := lambda.New(awsSession)
 		cloudwatchlogsSvc := cloudwatchlogs.New(awsSession)
 
-		changer := changer.NewChanger(lambdaSvc, sugaredLogger)
-		analyzer := analyzer.NewAnalyzer(cloudwatchlogsSvc, sugaredLogger)
+		changer := changer.NewChanger(lambdaSvc)
+		analyzer := analyzer.NewAnalyzer(cloudwatchlogsSvc, waitTime)
 
 		resetMemoryValue, err := changer.GetCurrentMemoryValue(lambdaARN)
 		if err != nil {
 			os.Exit(1)
 		}
-		sugaredLogger.Infof("Memory value before test start: %d", resetMemoryValue)
+		helper.LogInfo("Memory value before test start: %d", resetMemoryValue)
 
 		durationResults := make(map[int]float64)
 		costResults := make(map[int]float64)
 		for memory := memoryMin; memory <= memoryMax; memory += memoryIncrement {
-			sugaredLogger.Infof("Starting test for %dMB", memory)
+			helper.LogInfo("Starting test for %dMB", memory)
 
 			err := changer.ChangeMemory(lambdaARN, memory)
 			if err != nil {
@@ -75,31 +72,33 @@ var rootCmd = &cobra.Command{
 
 				maps.Copy(invocations, newInvocations)
 
-				sugaredLogger.Infof("Total number of invocations analyzed for memory config: %d", len(invocations))
+				helper.LogInfo("Total number of invocations analyzed for memory config: %d", len(invocations))
 				if len(invocations) > minRequests {
 					break
 				}
 
-				sugaredLogger.Infof("Waiting %d seconds before next analysis", waitTime)
+				helper.LogNotice("Waiting %d seconds before next analysis", waitTime)
 				time.Sleep(time.Duration(waitTime) * time.Second)
 			}
 
-			sugaredLogger.Infof("Calculating average duration for %dMB memory", memory)
+			helper.LogNotice("Calculating average duration for %dMB memory", memory)
 			average := calculateAverageOfMap(invocations)
 			durationResults[memory] = average
-			sugaredLogger.Infof("Average duration for %dMB memory: %f", memory, average)
 
 			cost := calculateCost(average, memory)
 			costResults[memory] = cost
-			sugaredLogger.Infof("Cost for %dMB memory: %f", memory, cost)
 
-			sugaredLogger.Infof("Test for %dMB finished", memory)
+			helper.LogSuccess("[RESULT] Memory: %d MB - Average Duration: %f ms - Cost %.10f USD", memory, average, cost)
+
+			helper.LogInfo("Test for %dMB finished", memory)
 		}
 
-		for memory, duration := range durationResults {
-			sugaredLogger.Infof("%dMB - Duration: %f - Cost: %f", memory, duration, costResults[memory])
+		sorted := memorySortedList(durationResults)
+		for _, memory := range sorted {
+			helper.LogSuccess("%d MB - Average Duration: %f ms - Cost: %.10f USD", memory, durationResults[memory], costResults[memory])
 		}
 
+		helper.LogInfo("Changing Lambda to pre-test memory value of %dMB", resetMemoryValue)
 		err = changer.ChangeMemory(lambdaARN, resetMemoryValue)
 		if err != nil {
 			os.Exit(1)
@@ -156,37 +155,49 @@ func initConfig() {
 }
 
 func validateInputs() {
+	validateLambdaARN()
+	validateWaitTime()
 	validateMemoryMinValue()
 	validateMemoryMaxValue()
 	validateMemoryIncrement()
 	validateMinRequests()
 }
 
-func validateMemoryMinValue() {
-	if memoryMin < 128 {
-		log.Println("Memory min value must be greater than or equal to 128")
+func validateWaitTime() {
+	if waitTime < 30 {
+		helper.LogError("Wait time must be at least 30 seconds")
 		os.Exit(1)
 	}
-	if memoryMin%64 != 0 {
-		log.Println("Memory min value must be a multiple of 64 with the minimal value of 128")
+}
+
+func validateLambdaARN() {
+	if !strings.HasPrefix(lambdaARN, "arn:aws:lambda:") {
+		helper.LogError("Lambda ARN must be in the format arn:aws:lambda:<region>:<account-id>:function:<function-name>")
+		os.Exit(1)
+	}
+}
+
+func validateMemoryMinValue() {
+	if memoryMin < 128 {
+		helper.LogError("Memory min value must be greater than or equal to 128")
 		os.Exit(1)
 	}
 }
 
 func validateMemoryMaxValue() {
 	if memoryMax <= memoryMin {
-		log.Println("Memory max value must be greater than the min value")
+		helper.LogError("Memory max value must be greater than the min value")
 		os.Exit(1)
 	}
-	if memoryMax%64 != 0 {
-		log.Println("Memory max value must be a multiple of 64 with the minimal value of 192")
+	if memoryMax > 10240 {
+		helper.LogError("Memory max value must be less than or equal to 10240")
 		os.Exit(1)
 	}
 }
 
 func validateMemoryIncrement() {
-	if memoryIncrement%64 != 0 {
-		log.Println("Memory increment value must be a multiple of 64")
+	if memoryIncrement < 1 {
+		helper.LogError("Memory increment must be greater than 0")
 		os.Exit(1)
 	}
 }
@@ -212,4 +223,15 @@ func calculateCost(duration float64, memory int) float64 {
 	costForMemoryInMilliseconds := (gbSecond / 1024 * float64(memory)) / 1000
 
 	return costForMemoryInMilliseconds * duration
+}
+
+func memorySortedList(results map[int]float64) []int {
+	keys := make([]int, 0, len(results))
+	for key := range results {
+		keys = append(keys, key)
+	}
+
+	sort.IntSlice(keys).Sort()
+
+	return keys
 }

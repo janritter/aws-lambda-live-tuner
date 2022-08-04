@@ -8,21 +8,22 @@ import (
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/cloudwatchlogs"
-	"go.uber.org/zap"
+	"github.com/janritter/aws-lambda-live-tuner/helper"
 )
 
 func (a *Analyzer) CheckInvocations(lambdaARN string, memory int) (map[string]float64, error) {
 	functionName := getFunctionNameFromARN(lambdaARN)
 	logGroupName := fmt.Sprintf("/aws/lambda/%s", functionName)
+	startTimeDiff := getStartTimeDiff(a.waitTime)
 
 	output, err := a.cloudwatch.StartQuery(&cloudwatchlogs.StartQueryInput{
 		QueryString:  aws.String(fmt.Sprintf(`filter @type = "REPORT" and @message like "Memory Size: %d MB"`, memory)),
 		LogGroupName: aws.String(logGroupName),
-		StartTime:    aws.Int64(time.Now().Add(-5 * time.Minute).Unix()),
+		StartTime:    aws.Int64(time.Now().Add(time.Duration(-1*startTimeDiff) * time.Second).Unix()),
 		EndTime:      aws.Int64(time.Now().Unix()),
 	})
 	if err != nil {
-		a.logger.Error("Failed starting CloudWatch log insights query: ", zap.Error(err))
+		helper.LogError("Failed starting CloudWatch log insights query: %s", err)
 		return nil, err
 	}
 
@@ -35,7 +36,7 @@ func (a *Analyzer) CheckInvocations(lambdaARN string, memory int) (map[string]fl
 			QueryId: aws.String(queryID),
 		})
 		if err != nil {
-			a.logger.Error("Failed getting CloudWatch log insights query results: ", zap.Error(err))
+			helper.LogError("Failed getting CloudWatch log insights query results: %s", err)
 			return nil, err
 		}
 
@@ -45,10 +46,9 @@ func (a *Analyzer) CheckInvocations(lambdaARN string, memory int) (map[string]fl
 			for _, fields := range results {
 				for _, field := range fields {
 					if *field.Field == "@message" {
-						// log.Println(*field.Value)
 						id, duration, err := getDurationWithRequestIdFromMessage(*field.Value)
 						if err != nil {
-							a.logger.Error(zap.Error(err))
+							helper.LogError("Failed to get duration with request id from message: %s", err)
 							return nil, err
 						}
 						resultMap[id] = duration
@@ -56,12 +56,12 @@ func (a *Analyzer) CheckInvocations(lambdaARN string, memory int) (map[string]fl
 				}
 			}
 
-			a.logger.Info("CloudWatch log insights query completed successfully")
+			helper.LogNotice("CloudWatch log insights query completed successfully")
 			break
 		}
 
 		if !(*queryResultOutput.Status == cloudwatchlogs.QueryStatusComplete || *queryResultOutput.Status == cloudwatchlogs.QueryStatusRunning || *queryResultOutput.Status == cloudwatchlogs.QueryStatusScheduled) {
-			a.logger.Error("CloudWatch log insights query is not an expected status: ", zap.String("status", *queryResultOutput.Status))
+			helper.LogError("CloudWatch log insights query is not an expected status: %s", *queryResultOutput.Status)
 			return nil, fmt.Errorf("CloudWatch log insights query is not an expected status: %s", *queryResultOutput.Status)
 		}
 	}
@@ -114,4 +114,16 @@ func getDurationFromMessage(message string) (float64, error) {
 		return -1, fmt.Errorf("Failed to convert duration to int: %s", duration)
 	}
 	return durationFloat, nil
+}
+
+func getStartTimeDiff(waitTime int) int {
+	// We use the wait time multplied by 2 to not miss any invocations between checks
+	wait := waitTime * 2
+
+	// Due to delay in CloudWatch ingestion we always use the last 5 minutes as the minimum time window
+	if wait <= 300 {
+		wait = 300
+	}
+
+	return wait
 }
