@@ -23,7 +23,7 @@ func (a *Analyzer) CheckInvocations(lambdaARN string, memory int) (map[string]fl
 		EndTime:      aws.Int64(time.Now().Unix()),
 	})
 	if err != nil {
-		helper.LogError("Failed starting CloudWatch log insights query: ", err)
+		helper.LogError("Failed starting CloudWatch log insights query: %s", err)
 		return nil, err
 	}
 
@@ -36,7 +36,7 @@ func (a *Analyzer) CheckInvocations(lambdaARN string, memory int) (map[string]fl
 			QueryId: aws.String(queryID),
 		})
 		if err != nil {
-			helper.LogError("Failed getting CloudWatch log insights query results: ", err)
+			helper.LogError("Failed getting CloudWatch log insights query results: %s", err)
 			return nil, err
 		}
 
@@ -48,7 +48,7 @@ func (a *Analyzer) CheckInvocations(lambdaARN string, memory int) (map[string]fl
 					if *field.Field == "@message" {
 						id, duration, err := getDurationWithRequestIdFromMessage(*field.Value)
 						if err != nil {
-							helper.LogError("Failed to get duration with request id from message: ", err)
+							helper.LogError("Failed to get duration with request id from message: %s", err)
 							return nil, err
 						}
 						resultMap[id] = duration
@@ -61,7 +61,7 @@ func (a *Analyzer) CheckInvocations(lambdaARN string, memory int) (map[string]fl
 		}
 
 		if !(*queryResultOutput.Status == cloudwatchlogs.QueryStatusComplete || *queryResultOutput.Status == cloudwatchlogs.QueryStatusRunning || *queryResultOutput.Status == cloudwatchlogs.QueryStatusScheduled) {
-			helper.LogError("CloudWatch log insights query is not an expected status: ", *queryResultOutput.Status)
+			helper.LogError("CloudWatch log insights query is not an expected status: %s", *queryResultOutput.Status)
 			return nil, fmt.Errorf("CloudWatch log insights query is not an expected status: %s", *queryResultOutput.Status)
 		}
 	}

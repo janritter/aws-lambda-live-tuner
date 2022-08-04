@@ -12,7 +12,8 @@ func (c *Changer) ChangeMemory(lambdaARN string, memory int) error {
 		FunctionName: aws.String(lambdaARN),
 	})
 	if err != nil {
-		helper.LogError("Failed to change memory: ", err)
+		helper.LogError("Failed to change memory: %s", err)
+		return err
 	}
 	helper.LogNotice("Changed Lambda memory to: %d", memory)
 	return nil
@@ -23,7 +24,7 @@ func (c *Changer) GetCurrentMemoryValue(lambdaARN string) (int, error) {
 		FunctionName: aws.String(lambdaARN),
 	})
 	if err != nil {
-		helper.LogError("Failed to get current memory value: ", err)
+		helper.LogError("Failed to get current memory value: %s", err)
 		return -1, err
 	}
 
