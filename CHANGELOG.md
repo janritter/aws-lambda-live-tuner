@@ -1,3 +1,10 @@
+## [0.2.1](https://github.com/janritter/aws-lambda-live-tuner/compare/0.2.0...0.2.1) (2022-08-04)
+
+
+### Bug Fixes
+
+* removed wrong increment help description ([07721cc](https://github.com/janritter/aws-lambda-live-tuner/commit/07721cceaa2f5c940055a8e9f3080f5af9158bab))
+
 # [0.2.0](https://github.com/janritter/aws-lambda-live-tuner/compare/0.1.1...0.2.0) (2022-08-04)
 
 
