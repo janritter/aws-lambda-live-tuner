@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"sort"
 	"strings"
 	"time"
 
@@ -92,8 +93,9 @@ var rootCmd = &cobra.Command{
 			helper.LogInfo("Test for %dMB finished", memory)
 		}
 
-		for memory, duration := range durationResults {
-			helper.LogSuccess("%d MB - Average Duration: %f ms - Cost: %.10f USD", memory, duration, costResults[memory])
+		sorted := memorySortedList(durationResults)
+		for _, memory := range sorted {
+			helper.LogSuccess("%d MB - Average Duration: %f ms - Cost: %.10f USD", memory, durationResults[memory], costResults[memory])
 		}
 
 		helper.LogInfo("Changing Lambda to pre-test memory value of %dMB", resetMemoryValue)
@@ -221,4 +223,15 @@ func calculateCost(duration float64, memory int) float64 {
 	costForMemoryInMilliseconds := (gbSecond / 1024 * float64(memory)) / 1000
 
 	return costForMemoryInMilliseconds * duration
+}
+
+func memorySortedList(results map[int]float64) []int {
+	keys := make([]int, 0, len(results))
+	for key := range results {
+		keys = append(keys, key)
+	}
+
+	sort.IntSlice(keys).Sort()
+
+	return keys
 }

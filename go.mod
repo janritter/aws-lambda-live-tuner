@@ -3,7 +3,7 @@ module github.com/janritter/aws-lambda-live-tuner
 go 1.18
 
 require (
-	github.com/aws/aws-sdk-go v1.44.68
+	github.com/aws/aws-sdk-go v1.44.69
 	github.com/fatih/color v1.13.0
 	github.com/mitchellh/go-homedir v1.1.0
 	github.com/spf13/cobra v1.5.0
@@ -27,7 +27,7 @@ require (
 	github.com/spf13/jwalterweatherman v1.1.0 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/subosito/gotenv v1.4.0 // indirect
-	golang.org/x/sys v0.0.0-20220731174439-a90be440212d // indirect
+	golang.org/x/sys v0.0.0-20220803195053-6e608f9ce704 // indirect
 	golang.org/x/text v0.3.7 // indirect
 	gopkg.in/ini.v1 v1.66.6 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
