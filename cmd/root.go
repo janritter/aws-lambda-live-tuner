@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/aws/aws-sdk-go/aws/session"
@@ -152,37 +153,49 @@ func initConfig() {
 }
 
 func validateInputs() {
+	validateLambdaARN()
+	validateWaitTime()
 	validateMemoryMinValue()
 	validateMemoryMaxValue()
 	validateMemoryIncrement()
 	validateMinRequests()
 }
 
-func validateMemoryMinValue() {
-	if memoryMin < 128 {
-		log.Println("Memory min value must be greater than or equal to 128")
+func validateWaitTime() {
+	if waitTime < 30 {
+		helper.LogError("Wait time must be at least 30 seconds")
 		os.Exit(1)
 	}
-	if memoryMin%64 != 0 {
-		log.Println("Memory min value must be a multiple of 64 with the minimal value of 128")
+}
+
+func validateLambdaARN() {
+	if !strings.HasPrefix(lambdaARN, "arn:aws:lambda:") {
+		helper.LogError("Lambda ARN must be in the format arn:aws:lambda:<region>:<account-id>:function:<function-name>")
+		os.Exit(1)
+	}
+}
+
+func validateMemoryMinValue() {
+	if memoryMin < 128 {
+		helper.LogError("Memory min value must be greater than or equal to 128")
 		os.Exit(1)
 	}
 }
 
 func validateMemoryMaxValue() {
 	if memoryMax <= memoryMin {
-		log.Println("Memory max value must be greater than the min value")
+		helper.LogError("Memory max value must be greater than the min value")
 		os.Exit(1)
 	}
-	if memoryMax%64 != 0 {
-		log.Println("Memory max value must be a multiple of 64 with the minimal value of 192")
+	if memoryMax > 10240 {
+		helper.LogError("Memory max value must be less than or equal to 10240")
 		os.Exit(1)
 	}
 }
 
 func validateMemoryIncrement() {
-	if memoryIncrement%64 != 0 {
-		log.Println("Memory increment value must be a multiple of 64")
+	if memoryIncrement < 1 {
+		helper.LogError("Memory increment must be greater than 0")
 		os.Exit(1)
 	}
 }

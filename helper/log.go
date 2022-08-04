@@ -27,6 +27,6 @@ func LogSuccess(format string, args ...interface{}) {
 
 func LogError(format string, args ...interface{}) {
 	color.Set(color.FgRed)
-	log.Println(fmt.Sprintf(format, args...))
+	log.Println("[ERROR] " + fmt.Sprintf(format, args...))
 	color.Unset()
 }
