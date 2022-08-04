@@ -6,7 +6,8 @@ import (
 )
 
 type ChangerAPI interface {
-	ChangeMemory(memory int) error
+	ChangeMemory(lambdaARN string, memory int) error
+	GetCurrentMemoryValue(lambdaARN string) (int, error)
 }
 
 type Changer struct {

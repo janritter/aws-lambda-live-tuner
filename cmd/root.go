@@ -48,14 +48,20 @@ var rootCmd = &cobra.Command{
 		changer := changer.NewChanger(lambdaSvc, sugaredLogger)
 		analyzer := analyzer.NewAnalyzer(cloudwatchlogsSvc, sugaredLogger)
 
+		resetMemoryValue, err := changer.GetCurrentMemoryValue(lambdaARN)
+		if err != nil {
+			os.Exit(1)
+		}
+		sugaredLogger.Infof("Memory value before test start: %d", resetMemoryValue)
+
 		durationResults := make(map[int]float64)
 		costResults := make(map[int]float64)
-
 		for memory := memoryMin; memory <= memoryMax; memory += memoryIncrement {
 			sugaredLogger.Infof("Starting test for %dMB", memory)
 
 			err := changer.ChangeMemory(lambdaARN, memory)
 			if err != nil {
+				changer.ChangeMemory(lambdaARN, resetMemoryValue)
 				os.Exit(1)
 			}
 
@@ -63,6 +69,7 @@ var rootCmd = &cobra.Command{
 			for len(invocations) < minRequests {
 				newInvocations, err := analyzer.CheckInvocations(lambdaARN, memory)
 				if err != nil {
+					changer.ChangeMemory(lambdaARN, resetMemoryValue)
 					os.Exit(1)
 				}
 
@@ -91,6 +98,11 @@ var rootCmd = &cobra.Command{
 
 		for memory, duration := range durationResults {
 			sugaredLogger.Infof("%dMB - Duration: %f - Cost: %f", memory, duration, costResults[memory])
+		}
+
+		err = changer.ChangeMemory(lambdaARN, resetMemoryValue)
+		if err != nil {
+			os.Exit(1)
 		}
 	},
 }
