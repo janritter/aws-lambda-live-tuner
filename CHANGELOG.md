@@ -1,3 +1,10 @@
+## [0.1.1](https://github.com/janritter/aws-lambda-live-tuner/compare/0.1.0...0.1.1) (2022-08-04)
+
+
+### Bug Fixes
+
+* reset lambda memory config to the pre test value - resolves [#2](https://github.com/janritter/aws-lambda-live-tuner/issues/2) ([9fac8ab](https://github.com/janritter/aws-lambda-live-tuner/commit/9fac8aba7010bea345f0ff21f44fa7a0c2261488))
+
 # [0.1.0](https://github.com/janritter/aws-lambda-live-tuner/compare/0.0.0...0.1.0) (2022-08-04)
 
 
