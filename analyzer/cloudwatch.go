@@ -8,7 +8,7 @@ import (
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/cloudwatchlogs"
-	"go.uber.org/zap"
+	"github.com/janritter/aws-lambda-live-tuner/helper"
 )
 
 func (a *Analyzer) CheckInvocations(lambdaARN string, memory int) (map[string]float64, error) {
@@ -22,7 +22,7 @@ func (a *Analyzer) CheckInvocations(lambdaARN string, memory int) (map[string]fl
 		EndTime:      aws.Int64(time.Now().Unix()),
 	})
 	if err != nil {
-		a.logger.Error("Failed starting CloudWatch log insights query: ", zap.Error(err))
+		helper.LogError("Failed starting CloudWatch log insights query: ", err)
 		return nil, err
 	}
 
@@ -35,7 +35,7 @@ func (a *Analyzer) CheckInvocations(lambdaARN string, memory int) (map[string]fl
 			QueryId: aws.String(queryID),
 		})
 		if err != nil {
-			a.logger.Error("Failed getting CloudWatch log insights query results: ", zap.Error(err))
+			helper.LogError("Failed getting CloudWatch log insights query results: ", err)
 			return nil, err
 		}
 
@@ -45,10 +45,9 @@ func (a *Analyzer) CheckInvocations(lambdaARN string, memory int) (map[string]fl
 			for _, fields := range results {
 				for _, field := range fields {
 					if *field.Field == "@message" {
-						// log.Println(*field.Value)
 						id, duration, err := getDurationWithRequestIdFromMessage(*field.Value)
 						if err != nil {
-							a.logger.Error(zap.Error(err))
+							helper.LogError("Failed to get duration with request id from message: ", err)
 							return nil, err
 						}
 						resultMap[id] = duration
@@ -56,12 +55,12 @@ func (a *Analyzer) CheckInvocations(lambdaARN string, memory int) (map[string]fl
 				}
 			}
 
-			a.logger.Info("CloudWatch log insights query completed successfully")
+			helper.LogNotice("CloudWatch log insights query completed successfully")
 			break
 		}
 
 		if !(*queryResultOutput.Status == cloudwatchlogs.QueryStatusComplete || *queryResultOutput.Status == cloudwatchlogs.QueryStatusRunning || *queryResultOutput.Status == cloudwatchlogs.QueryStatusScheduled) {
-			a.logger.Error("CloudWatch log insights query is not an expected status: ", zap.String("status", *queryResultOutput.Status))
+			helper.LogError("CloudWatch log insights query is not an expected status: ", *queryResultOutput.Status)
 			return nil, fmt.Errorf("CloudWatch log insights query is not an expected status: %s", *queryResultOutput.Status)
 		}
 	}

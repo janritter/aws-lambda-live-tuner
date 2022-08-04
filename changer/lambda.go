@@ -3,7 +3,7 @@ package changer
 import (
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/lambda"
-	"go.uber.org/zap"
+	"github.com/janritter/aws-lambda-live-tuner/helper"
 )
 
 func (c *Changer) ChangeMemory(lambdaARN string, memory int) error {
@@ -12,9 +12,9 @@ func (c *Changer) ChangeMemory(lambdaARN string, memory int) error {
 		FunctionName: aws.String(lambdaARN),
 	})
 	if err != nil {
-		c.logger.Error("Failed to change memory: ", zap.Error(err))
+		helper.LogError("Failed to change memory: ", err)
 	}
-	c.logger.Infof("Changed Lambda memory to: %d", memory)
+	helper.LogNotice("Changed Lambda memory to: %d", memory)
 	return nil
 }
 
@@ -23,7 +23,7 @@ func (c *Changer) GetCurrentMemoryValue(lambdaARN string) (int, error) {
 		FunctionName: aws.String(lambdaARN),
 	})
 	if err != nil {
-		c.logger.Error("Failed to get current memory value: ", zap.Error(err))
+		helper.LogError("Failed to get current memory value: ", err)
 		return -1, err
 	}
 
