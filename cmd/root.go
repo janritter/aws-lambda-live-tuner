@@ -123,7 +123,7 @@ func init() {
 	rootCmd.PersistentFlags().IntVar(&minRequests, "min-requests", 5, "Minimum number of requests the Lambda function must receive before continuing with the next memory configuration")
 	rootCmd.PersistentFlags().IntVar(&memoryMin, "memory-min", 128, "Lower memory limit for the optimization")
 	rootCmd.PersistentFlags().IntVar(&memoryMax, "memory-max", 2048, "Upper memory limit for the optimization")
-	rootCmd.PersistentFlags().IntVar(&memoryIncrement, "memory-increment", 64, "Increments for the memory configuration added to the min value until the max value is reached. The increment must be a multiple of 64")
+	rootCmd.PersistentFlags().IntVar(&memoryIncrement, "memory-increment", 64, "Increments for the memory configuration added to the min value until the max value is reached")
 	rootCmd.PersistentFlags().StringVar(&lambdaARN, "lambda-arn", "", "ARN of the Lambda function to optimize")
 	rootCmd.PersistentFlags().IntVar(&waitTime, "wait-time", 180, "Wait time in seconds between CloudWatch Log insights queries")
 }
