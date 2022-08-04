@@ -10,10 +10,12 @@ type AnalyzerAPI interface {
 
 type Analyzer struct {
 	cloudwatch cloudwatchlogsiface.CloudWatchLogsAPI
+	waitTime   int
 }
 
-func NewAnalyzer(cloudwatch cloudwatchlogsiface.CloudWatchLogsAPI) *Analyzer {
+func NewAnalyzer(cloudwatch cloudwatchlogsiface.CloudWatchLogsAPI, waitTime int) *Analyzer {
 	return &Analyzer{
 		cloudwatch: cloudwatch,
+		waitTime:   waitTime,
 	}
 }

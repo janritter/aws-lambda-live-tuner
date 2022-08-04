@@ -41,7 +41,7 @@ var rootCmd = &cobra.Command{
 		cloudwatchlogsSvc := cloudwatchlogs.New(awsSession)
 
 		changer := changer.NewChanger(lambdaSvc)
-		analyzer := analyzer.NewAnalyzer(cloudwatchlogsSvc)
+		analyzer := analyzer.NewAnalyzer(cloudwatchlogsSvc, waitTime)
 
 		resetMemoryValue, err := changer.GetCurrentMemoryValue(lambdaARN)
 		if err != nil {

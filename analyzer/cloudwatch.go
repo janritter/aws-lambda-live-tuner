@@ -14,11 +14,12 @@ import (
 func (a *Analyzer) CheckInvocations(lambdaARN string, memory int) (map[string]float64, error) {
 	functionName := getFunctionNameFromARN(lambdaARN)
 	logGroupName := fmt.Sprintf("/aws/lambda/%s", functionName)
+	startTimeDiff := getStartTimeDiff(a.waitTime)
 
 	output, err := a.cloudwatch.StartQuery(&cloudwatchlogs.StartQueryInput{
 		QueryString:  aws.String(fmt.Sprintf(`filter @type = "REPORT" and @message like "Memory Size: %d MB"`, memory)),
 		LogGroupName: aws.String(logGroupName),
-		StartTime:    aws.Int64(time.Now().Add(-5 * time.Minute).Unix()),
+		StartTime:    aws.Int64(time.Now().Add(time.Duration(-1*startTimeDiff) * time.Second).Unix()),
 		EndTime:      aws.Int64(time.Now().Unix()),
 	})
 	if err != nil {
@@ -113,4 +114,16 @@ func getDurationFromMessage(message string) (float64, error) {
 		return -1, fmt.Errorf("Failed to convert duration to int: %s", duration)
 	}
 	return durationFloat, nil
+}
+
+func getStartTimeDiff(waitTime int) int {
+	// We use the wait time multplied by 2 to not miss any invocations between checks
+	wait := waitTime * 2
+
+	// Due to delay in CloudWatch ingestion we always use the last 5 minutes as the minimum time window
+	if wait <= 300 {
+		wait = 300
+	}
+
+	return wait
 }
