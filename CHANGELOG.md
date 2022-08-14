@@ -1,3 +1,10 @@
+## [0.2.2](https://github.com/janritter/aws-lambda-live-tuner/compare/0.2.1...0.2.2) (2022-08-14)
+
+
+### Bug Fixes
+
+* aws-sdk package and go version updates ([cc552a8](https://github.com/janritter/aws-lambda-live-tuner/commit/cc552a8b4d5fc94745dafc449022f68f29aaf082))
+
 ## [0.2.1](https://github.com/janritter/aws-lambda-live-tuner/compare/0.2.0...0.2.1) (2022-08-04)
 
 
