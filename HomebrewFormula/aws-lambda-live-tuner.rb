@@ -5,21 +5,21 @@
 class AwsLambdaLiveTuner < Formula
   desc "Tool to optimize Lambda functions on real incoming events"
   homepage "https://github.com/janritter/aws-lambda-live-tuner"
-  version "0.2.2"
+  version "0.2.3"
   license "MIT"
 
   on_macos do
     if Hardware::CPU.arm?
-      url "https://github.com/janritter/aws-lambda-live-tuner/releases/download/0.2.2/aws-lambda-live-tuner_0.2.2_darwin_arm64.tar.gz"
-      sha256 "f8b9d1ba79ca90c8669532087eeee46183e0e44e4ce41e3a7aba345f599f060c"
+      url "https://github.com/janritter/aws-lambda-live-tuner/releases/download/0.2.3/aws-lambda-live-tuner_0.2.3_darwin_arm64.tar.gz"
+      sha256 "1bab150ffcd16036a1cbcf2e055c1bced5216a105374323dcd6defca9b94314b"
 
       def install
         bin.install "aws-lambda-live-tuner"
       end
     end
     if Hardware::CPU.intel?
-      url "https://github.com/janritter/aws-lambda-live-tuner/releases/download/0.2.2/aws-lambda-live-tuner_0.2.2_darwin_amd64.tar.gz"
-      sha256 "93c828911f3e7da9c11cc7656d997f4d935d1804578f42967ad1a7c5936bc669"
+      url "https://github.com/janritter/aws-lambda-live-tuner/releases/download/0.2.3/aws-lambda-live-tuner_0.2.3_darwin_amd64.tar.gz"
+      sha256 "ac40ab46bc5ff2cc7f9f3ea5435c6972462ff4916fc55b9cf6b12822973c08ef"
 
       def install
         bin.install "aws-lambda-live-tuner"
@@ -29,16 +29,16 @@ class AwsLambdaLiveTuner < Formula
 
   on_linux do
     if Hardware::CPU.arm? && Hardware::CPU.is_64_bit?
-      url "https://github.com/janritter/aws-lambda-live-tuner/releases/download/0.2.2/aws-lambda-live-tuner_0.2.2_linux_arm64.tar.gz"
-      sha256 "b9e30ef337006c0cb5d37f30cb623fdfa0aac23a71689ae764d291841babf6f7"
+      url "https://github.com/janritter/aws-lambda-live-tuner/releases/download/0.2.3/aws-lambda-live-tuner_0.2.3_linux_arm64.tar.gz"
+      sha256 "a81d2a6c5651b69a5e7f74388a5a70039b3ed271bbf8a998d329f809643c4e0a"
 
       def install
         bin.install "aws-lambda-live-tuner"
       end
     end
     if Hardware::CPU.intel?
-      url "https://github.com/janritter/aws-lambda-live-tuner/releases/download/0.2.2/aws-lambda-live-tuner_0.2.2_linux_amd64.tar.gz"
-      sha256 "74c8ccc7e0fd66e58e8b7305b554299fae88d43e8f22571630dd948f92b03f58"
+      url "https://github.com/janritter/aws-lambda-live-tuner/releases/download/0.2.3/aws-lambda-live-tuner_0.2.3_linux_amd64.tar.gz"
+      sha256 "77c0a7c7e771e039442a8d848ff6b11e345cb33c126f667811c737cec0c85d2a"
 
       def install
         bin.install "aws-lambda-live-tuner"
