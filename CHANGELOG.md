@@ -1,3 +1,10 @@
+## [0.2.3](https://github.com/janritter/aws-lambda-live-tuner/compare/0.2.2...0.2.3) (2022-08-26)
+
+
+### Bug Fixes
+
+* **deps:** update minor - go ([4c283c2](https://github.com/janritter/aws-lambda-live-tuner/commit/4c283c2085b0101b2aa20f61e4067238f4e19583))
+
 ## [0.2.2](https://github.com/janritter/aws-lambda-live-tuner/compare/0.2.1...0.2.2) (2022-08-14)
 
 
