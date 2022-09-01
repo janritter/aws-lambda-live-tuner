@@ -14,6 +14,7 @@ import (
 	"github.com/janritter/aws-lambda-live-tuner/analyzer"
 	"github.com/janritter/aws-lambda-live-tuner/changer"
 	"github.com/janritter/aws-lambda-live-tuner/helper"
+	"github.com/janritter/aws-lambda-live-tuner/output"
 	"github.com/spf13/cobra"
 
 	homedir "github.com/mitchellh/go-homedir"
@@ -29,6 +30,7 @@ var memoryMax int
 var waitTime int
 var memoryIncrement int
 var lambdaARN string
+var outputFilename string
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
@@ -93,9 +95,19 @@ var rootCmd = &cobra.Command{
 			helper.LogInfo("Test for %dMB finished", memory)
 		}
 
+		csvRecords := [][]string{
+			{"memory", "duration", "cost"},
+		}
 		sorted := memorySortedList(durationResults)
 		for _, memory := range sorted {
 			helper.LogSuccess("%d MB - Average Duration: %f ms - Cost: %.10f USD", memory, durationResults[memory], costResults[memory])
+			csvRecords = append(csvRecords, []string{
+				fmt.Sprint(memory), fmt.Sprintf("%f", durationResults[memory]), fmt.Sprintf("%.10f", costResults[memory]),
+			})
+		}
+
+		if outputFilename != "" {
+			output.WriteCSV(outputFilename, csvRecords)
 		}
 
 		helper.LogInfo("Changing Lambda to pre-test memory value of %dMB", resetMemoryValue)
@@ -126,6 +138,7 @@ func init() {
 	rootCmd.PersistentFlags().IntVar(&memoryIncrement, "memory-increment", 64, "Increments for the memory configuration added to the min value until the max value is reached")
 	rootCmd.PersistentFlags().StringVar(&lambdaARN, "lambda-arn", "", "ARN of the Lambda function to optimize")
 	rootCmd.PersistentFlags().IntVar(&waitTime, "wait-time", 180, "Wait time in seconds between CloudWatch Log insights queries")
+	rootCmd.PersistentFlags().StringVar(&outputFilename, "output-filename", "", "Filename for the output csv")
 }
 
 // initConfig reads in config file and ENV variables if set.
