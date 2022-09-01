@@ -1,3 +1,10 @@
+# [0.3.0](https://github.com/janritter/aws-lambda-live-tuner/compare/0.2.4...0.3.0) (2022-09-01)
+
+
+### Features
+
+* added csv output option ([046e259](https://github.com/janritter/aws-lambda-live-tuner/commit/046e259a8a52e81982c9cb27f04f1d21d268f1e8))
+
 ## [0.2.4](https://github.com/janritter/aws-lambda-live-tuner/compare/0.2.3...0.2.4) (2022-08-29)
 
 
