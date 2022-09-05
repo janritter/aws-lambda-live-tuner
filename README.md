@@ -2,31 +2,19 @@
 
 [![CircleCI](https://circleci.com/gh/janritter/aws-lambda-live-tuner/tree/main.svg?style=svg)](https://circleci.com/gh/janritter/aws-lambda-live-tuner/tree/main)
 
-> Tool to optimize Lambda functions on real incoming events
+> **Warning**
+> AWS Lambda Live Tuner is still in very early development, functionality might change between releases until version 1.0.0.
+> Ideas and feedback are very welcome
+
+AWS Lambda Live Tuner tests memory configurations based on real incoming events instead of a single test event.
+
+Let's imagine we are testing a Lambda function that processes a queue, since the Lambda function is idempotent, messages that have already been processed will be successfully processed again. Using the same test event on all invocations might falsify the results because all subsequent invocations after the initial one might be way faster (event was already processed before). Using different incoming events instead helps you test the actual behavior of the Lambda.
+
+This project is heavily inspried by the open source tool [aws-lambda-power-tuning](https://github.com/alexcasalboni/aws-lambda-power-tuning) 
 
 ## Prerequisites
 
-- TODO
-
-## Installation via go
-
-### Clone git repo
-
-```bash
-git clone git@github.com:janritter/aws-lambda-live-tuner.git
-```
-
-### Open project directory
-
-```bash
-cd aws-lambda-live-tuner
-```
-
-### Install via go
-
-```bash
-go install
-```
+- Configured AWS credentials
 
 ## Installation via Homebrew (For Mac / Linux)
 
