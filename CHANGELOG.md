@@ -1,3 +1,15 @@
+# [0.4.0](https://github.com/janritter/aws-lambda-live-tuner/compare/0.3.0...0.4.0) (2022-09-07)
+
+
+### Bug Fixes
+
+* **deps:** go mod updates ([e9efc59](https://github.com/janritter/aws-lambda-live-tuner/commit/e9efc59031f343a22536ab460049ecb5d798aa88))
+
+
+### Features
+
+* **#16:** added support for arm architecture in cost calculation ([803be32](https://github.com/janritter/aws-lambda-live-tuner/commit/803be321bfe9e3496132cd508163ce44e912552c)), closes [#16](https://github.com/janritter/aws-lambda-live-tuner/issues/16)
+
 # [0.3.0](https://github.com/janritter/aws-lambda-live-tuner/compare/0.2.4...0.3.0) (2022-09-01)
 
 
