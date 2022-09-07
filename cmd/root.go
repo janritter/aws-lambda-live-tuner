@@ -13,6 +13,7 @@ import (
 	"github.com/aws/aws-sdk-go/service/lambda"
 	"github.com/janritter/aws-lambda-live-tuner/analyzer"
 	"github.com/janritter/aws-lambda-live-tuner/changer"
+	"github.com/janritter/aws-lambda-live-tuner/cost"
 	"github.com/janritter/aws-lambda-live-tuner/helper"
 	"github.com/janritter/aws-lambda-live-tuner/output"
 	"github.com/spf13/cobra"
@@ -53,6 +54,12 @@ var rootCmd = &cobra.Command{
 		}
 		helper.LogInfo("Memory value before test start: %d", resetMemoryValue)
 
+		architecture, err := changer.GetArchitecture(lambdaARN)
+		if err != nil {
+			os.Exit(1)
+		}
+		helper.LogInfo("Architecture of Lambda: %s", architecture)
+
 		durationResults := make(map[int]float64)
 		costResults := make(map[int]float64)
 		for memory := memoryMin; memory <= memoryMax; memory += memoryIncrement {
@@ -87,10 +94,11 @@ var rootCmd = &cobra.Command{
 			average := calculateAverageOfMap(invocations)
 			durationResults[memory] = average
 
-			cost := calculateCost(average, memory)
-			costResults[memory] = cost
+			costResult := cost.Calculate(average, memory, architecture, getRegionFromARN(lambdaARN))
 
-			helper.LogSuccess("[RESULT] Memory: %d MB - Average Duration: %f ms - Cost %.10f USD", memory, average, cost)
+			costResults[memory] = costResult
+
+			helper.LogSuccess("[RESULT] Memory: %d MB - Average Duration: %f ms - Cost %.10f USD", memory, average, costResult)
 
 			helper.LogInfo("Test for %dMB finished", memory)
 		}
@@ -190,6 +198,11 @@ func validateLambdaARN() {
 	}
 }
 
+func getRegionFromARN(arn string) string {
+	elements := strings.Split(arn, ":")
+	return elements[3]
+}
+
 func validateMemoryMinValue() {
 	if memoryMin < 128 {
 		helper.LogError("Memory min value must be greater than or equal to 128")
@@ -228,14 +241,6 @@ func calculateAverageOfMap(data map[string]float64) float64 {
 		total += value
 	}
 	return total / float64(len(data))
-}
-
-func calculateCost(duration float64, memory int) float64 {
-	gbSecond := 0.0000166667 // price for eu-central-1 x86
-
-	costForMemoryInMilliseconds := (gbSecond / 1024 * float64(memory)) / 1000
-
-	return costForMemoryInMilliseconds * duration
 }
 
 func memorySortedList(results map[int]float64) []int {
