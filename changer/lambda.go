@@ -30,3 +30,15 @@ func (c *Changer) GetCurrentMemoryValue(lambdaARN string) (int, error) {
 
 	return int(*result.MemorySize), nil
 }
+
+func (c *Changer) GetArchitecture(lambdaARN string) (string, error) {
+	result, err := c.lambda.GetFunctionConfiguration(&lambda.GetFunctionConfigurationInput{
+		FunctionName: aws.String(lambdaARN),
+	})
+	if err != nil {
+		helper.LogError("Failed to get architecture: %s", err)
+		return "", err
+	}
+
+	return *result.Architectures[0], nil
+}
