@@ -2,10 +2,7 @@ package cmd
 
 import (
 	"fmt"
-	"log"
 	"os"
-	"sort"
-	"strings"
 	"time"
 
 	"github.com/aws/aws-sdk-go/aws/session"
@@ -86,10 +83,10 @@ var rootCmd = &cobra.Command{
 			}
 
 			helper.LogNotice("Calculating average duration for %dMB memory", memory)
-			average := calculateAverageOfMap(invocations)
+			average := helper.MapAverage(invocations)
 			durationResults[memory] = average
 
-			costResult := cost.Calculate(average, memory, lambda.Architecture, getRegionFromARN(lambdaARN))
+			costResult := cost.Calculate(average, memory, lambda.Architecture, helper.GetRegionFromARN(lambdaARN))
 
 			costResults[memory] = costResult
 
@@ -101,7 +98,7 @@ var rootCmd = &cobra.Command{
 		csvRecords := [][]string{
 			{"memory", "duration", "cost"},
 		}
-		sorted := memorySortedList(durationResults)
+		sorted := helper.SortByMemory(durationResults)
 		for _, memory := range sorted {
 			helper.LogSuccess("%d MB - Average Duration: %f ms - Cost: %.10f USD", memory, durationResults[memory], costResults[memory])
 			csvRecords = append(csvRecords, []string{
@@ -171,80 +168,10 @@ func initConfig() {
 }
 
 func validateInputs() {
-	validateLambdaARN()
-	validateWaitTime()
-	validateMemoryMinValue()
-	validateMemoryMaxValue()
-	validateMemoryIncrement()
-	validateMinRequests()
-}
-
-func validateWaitTime() {
-	if waitTime < 30 {
-		helper.LogError("Wait time must be at least 30 seconds")
-		os.Exit(1)
-	}
-}
-
-func validateLambdaARN() {
-	if !strings.HasPrefix(lambdaARN, "arn:aws:lambda:") {
-		helper.LogError("Lambda ARN must be in the format arn:aws:lambda:<region>:<account-id>:function:<function-name>")
-		os.Exit(1)
-	}
-}
-
-func getRegionFromARN(arn string) string {
-	elements := strings.Split(arn, ":")
-	return elements[3]
-}
-
-func validateMemoryMinValue() {
-	if memoryMin < 128 {
-		helper.LogError("Memory min value must be greater than or equal to 128")
-		os.Exit(1)
-	}
-}
-
-func validateMemoryMaxValue() {
-	if memoryMax <= memoryMin {
-		helper.LogError("Memory max value must be greater than the min value")
-		os.Exit(1)
-	}
-	if memoryMax > 10240 {
-		helper.LogError("Memory max value must be less than or equal to 10240")
-		os.Exit(1)
-	}
-}
-
-func validateMemoryIncrement() {
-	if memoryIncrement < 1 {
-		helper.LogError("Memory increment must be greater than 0")
-		os.Exit(1)
-	}
-}
-
-func validateMinRequests() {
-	if minRequests < 1 {
-		log.Println("Minimum number of requests must be greater than 0")
-		os.Exit(1)
-	}
-}
-
-func calculateAverageOfMap(data map[string]float64) float64 {
-	var total float64 = 0.0
-	for _, value := range data {
-		total += value
-	}
-	return total / float64(len(data))
-}
-
-func memorySortedList(results map[int]float64) []int {
-	keys := make([]int, 0, len(results))
-	for key := range results {
-		keys = append(keys, key)
-	}
-
-	sort.IntSlice(keys).Sort()
-
-	return keys
+	helper.ValidateLambdaARN(lambdaARN)
+	helper.ValidateWaitTime(waitTime)
+	helper.ValidateMemoryMinValue(memoryMin)
+	helper.ValidateMemoryMaxValue(memoryMax, memoryMin)
+	helper.ValidateMemoryIncrement(memoryIncrement)
+	helper.ValidateMinRequests(minRequests)
 }
