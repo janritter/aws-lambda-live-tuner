@@ -1,3 +1,10 @@
+## [0.4.1](https://github.com/janritter/aws-lambda-live-tuner/compare/0.4.0...0.4.1) (2022-09-09)
+
+
+### Bug Fixes
+
+* **deps:** updated aws sdk ([d515c53](https://github.com/janritter/aws-lambda-live-tuner/commit/d515c53bbf8270fd90e117b38d443058c3ac2571))
+
 # [0.4.0](https://github.com/janritter/aws-lambda-live-tuner/compare/0.3.0...0.4.0) (2022-09-07)
 
 
