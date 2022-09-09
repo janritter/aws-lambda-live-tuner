@@ -110,7 +110,6 @@ var rootCmd = &cobra.Command{
 			output.WriteCSV(outputFilename, csvRecords)
 		}
 
-		helper.LogInfo("Changing Lambda to pre-test memory value of %dMB", lambda.PreTestMemory)
 		err = lambda.ResetMemory()
 		if err != nil {
 			os.Exit(1)

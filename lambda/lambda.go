@@ -20,11 +20,7 @@ func (l *Lambda) ChangeMemory(memory int) error {
 }
 
 func (l *Lambda) ResetMemory() error {
+	helper.LogNotice("Changing Lambda memory to pre-test value of %dMB", l.PreTestMemory)
 	err := l.ChangeMemory(l.PreTestMemory)
-	if err != nil {
-		helper.LogError("Failed to change memory to pre-test value: %s", err)
-		return err
-	}
-	helper.LogNotice("Changed Lambda memory to pre-test value of %dMB", l.PreTestMemory)
-	return nil
+	return err
 }
