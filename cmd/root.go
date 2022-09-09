@@ -45,7 +45,7 @@ var rootCmd = &cobra.Command{
 		lambdaSvc := awsLambda.New(awsSession)
 		cloudwatchlogsSvc := cloudwatchlogs.New(awsSession)
 
-		analyzer := analyzer.NewAnalyzer(cloudwatchlogsSvc, waitTime)
+		analyzer := analyzer.NewAnalyzer(cloudwatchlogsSvc, lambdaARN, waitTime)
 
 		lambda, err := lambda.NewLambda(lambdaSvc, lambdaARN)
 		if err != nil {
@@ -68,7 +68,7 @@ var rootCmd = &cobra.Command{
 
 			invocations := make(map[string]float64)
 			for len(invocations) < minRequests {
-				newInvocations, err := analyzer.CheckInvocations(lambdaARN, memory)
+				newInvocations, err := analyzer.CheckInvocations(memory)
 				if err != nil {
 					lambda.ResetMemory()
 					os.Exit(1)

@@ -11,14 +11,12 @@ import (
 	"github.com/janritter/aws-lambda-live-tuner/helper"
 )
 
-func (a *Analyzer) CheckInvocations(lambdaARN string, memory int) (map[string]float64, error) {
-	functionName := getFunctionNameFromARN(lambdaARN)
-	logGroupName := fmt.Sprintf("/aws/lambda/%s", functionName)
+func (a *Analyzer) CheckInvocations(memory int) (map[string]float64, error) {
 	startTimeDiff := getStartTimeDiff(a.waitTime)
 
 	output, err := a.cloudwatch.StartQuery(&cloudwatchlogs.StartQueryInput{
 		QueryString:  aws.String(fmt.Sprintf(`filter @type = "REPORT" and @message like "Memory Size: %d MB"`, memory)),
-		LogGroupName: aws.String(logGroupName),
+		LogGroupName: aws.String(a.logGroupName),
 		StartTime:    aws.Int64(time.Now().Add(time.Duration(-1*startTimeDiff) * time.Second).Unix()),
 		EndTime:      aws.Int64(time.Now().Unix()),
 	})
@@ -67,11 +65,6 @@ func (a *Analyzer) CheckInvocations(lambdaARN string, memory int) (map[string]fl
 	}
 
 	return resultMap, nil
-}
-
-func getFunctionNameFromARN(arn string) string {
-	elements := strings.Split(arn, ":")
-	return elements[len(elements)-1]
 }
 
 func getDurationWithRequestIdFromMessage(message string) (string, float64, error) {
