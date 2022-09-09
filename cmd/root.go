@@ -10,11 +10,11 @@ import (
 
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/cloudwatchlogs"
-	"github.com/aws/aws-sdk-go/service/lambda"
+	awsLambda "github.com/aws/aws-sdk-go/service/lambda"
 	"github.com/janritter/aws-lambda-live-tuner/analyzer"
-	"github.com/janritter/aws-lambda-live-tuner/changer"
 	"github.com/janritter/aws-lambda-live-tuner/cost"
 	"github.com/janritter/aws-lambda-live-tuner/helper"
+	"github.com/janritter/aws-lambda-live-tuner/lambda"
 	"github.com/janritter/aws-lambda-live-tuner/output"
 	"github.com/spf13/cobra"
 
@@ -42,32 +42,27 @@ var rootCmd = &cobra.Command{
 		validateInputs()
 
 		awsSession := session.Must(session.NewSession())
-		lambdaSvc := lambda.New(awsSession)
+		lambdaSvc := awsLambda.New(awsSession)
 		cloudwatchlogsSvc := cloudwatchlogs.New(awsSession)
 
-		changer := changer.NewChanger(lambdaSvc)
 		analyzer := analyzer.NewAnalyzer(cloudwatchlogsSvc, waitTime)
 
-		resetMemoryValue, err := changer.GetCurrentMemoryValue(lambdaARN)
+		lambda, err := lambda.NewLambda(lambdaSvc, lambdaARN)
 		if err != nil {
 			os.Exit(1)
 		}
-		helper.LogInfo("Memory value before test start: %d", resetMemoryValue)
 
-		architecture, err := changer.GetArchitecture(lambdaARN)
-		if err != nil {
-			os.Exit(1)
-		}
-		helper.LogInfo("Architecture of Lambda: %s", architecture)
+		helper.LogInfo("Memory value before test start: %d", lambda.PreTestMemory)
+		helper.LogInfo("Architecture of Lambda: %s", lambda.Architecture)
 
 		durationResults := make(map[int]float64)
 		costResults := make(map[int]float64)
 		for memory := memoryMin; memory <= memoryMax; memory += memoryIncrement {
 			helper.LogInfo("Starting test for %dMB", memory)
 
-			err := changer.ChangeMemory(lambdaARN, memory)
+			err := lambda.ChangeMemory(memory)
 			if err != nil {
-				changer.ChangeMemory(lambdaARN, resetMemoryValue)
+				lambda.ResetMemory()
 				os.Exit(1)
 			}
 
@@ -75,7 +70,7 @@ var rootCmd = &cobra.Command{
 			for len(invocations) < minRequests {
 				newInvocations, err := analyzer.CheckInvocations(lambdaARN, memory)
 				if err != nil {
-					changer.ChangeMemory(lambdaARN, resetMemoryValue)
+					lambda.ResetMemory()
 					os.Exit(1)
 				}
 
@@ -94,7 +89,7 @@ var rootCmd = &cobra.Command{
 			average := calculateAverageOfMap(invocations)
 			durationResults[memory] = average
 
-			costResult := cost.Calculate(average, memory, architecture, getRegionFromARN(lambdaARN))
+			costResult := cost.Calculate(average, memory, lambda.Architecture, getRegionFromARN(lambdaARN))
 
 			costResults[memory] = costResult
 
@@ -118,8 +113,8 @@ var rootCmd = &cobra.Command{
 			output.WriteCSV(outputFilename, csvRecords)
 		}
 
-		helper.LogInfo("Changing Lambda to pre-test memory value of %dMB", resetMemoryValue)
-		err = changer.ChangeMemory(lambdaARN, resetMemoryValue)
+		helper.LogInfo("Changing Lambda to pre-test memory value of %dMB", lambda.PreTestMemory)
+		err = lambda.ResetMemory()
 		if err != nil {
 			os.Exit(1)
 		}
