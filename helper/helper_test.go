@@ -1,12 +1,12 @@
-package cmd
+package helper
 
 import (
 	"testing"
 )
 
-func TestMemorySortedList(t *testing.T) {
+func TestSortByMemory(t *testing.T) {
 	expected := []int{128, 256, 384, 512}
-	actual := memorySortedList(map[int]float64{
+	actual := SortByMemory(map[int]float64{
 		384: 0.0,
 		128: 0.0,
 		512: 0.0,
