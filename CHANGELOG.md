@@ -1,4 +1,4 @@
-# [1.0.0](https://github.com/janritter/aws-lambda-live-tuner/compare/0.5.0...1.0.0) (2022-09-10)
+# [0.6.0](https://github.com/janritter/aws-lambda-live-tuner/compare/0.5.0...0.6.0) (2022-09-10)
 
 
 ### Bug Fixes
