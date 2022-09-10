@@ -19,35 +19,36 @@ func (l *Lambda) ChangeMemory(memory int) error {
 	sem.Acquire(context.Background(), int64(1))
 
 	retry := 0
-	for retry <= 3 {
+	for retry <= 5 {
 		_, err := l.awsLambda.UpdateFunctionConfiguration(&lambda.UpdateFunctionConfigurationInput{
 			MemorySize:   aws.Int64(int64(memory)),
 			FunctionName: aws.String(l.Arn),
 		})
 
-		if err == nil {
-			sem.Release(int64(1))
-			helper.LogNotice("Changed Lambda memory to: %d", memory)
-			return nil
-		}
+		if err != nil {
+			if aerr, ok := err.(awserr.Error); ok {
+				if aerr.Code() == lambda.ErrCodeResourceConflictException {
+					helper.LogWarn("Lambda ResourceConflictException on memory update to %dMB - try: %d - Waiting 2 seconds", memory, retry+1)
+					time.Sleep(time.Second * 2)
+				} else {
+					helper.LogError("Failed to change memory: %s", err)
 
-		if aerr, ok := err.(awserr.Error); ok {
-			switch aerr.Code() {
-			case lambda.ErrCodeResourceConflictException:
-				helper.LogWarn("Lambda ResourceConflictException on memory update to %dMB - try: %d - Waiting 5 seconds", memory, retry+1)
-				time.Sleep(time.Second * 5)
-			default:
-				sem.Release(int64(1))
-				helper.LogError("Failed to change memory: %s", err)
-				return err
+					sem.Release(int64(1))
+					return err
+				}
 			}
+		} else {
+			helper.LogNotice("Changed Lambda memory to: %d", memory)
+
+			sem.Release(int64(1))
+			return nil
 		}
 
 		retry++
 	}
-	sem.Release(int64(1))
-
 	helper.LogError("Maximum number of retries to change Lambda memory exceeded")
+
+	sem.Release(int64(1))
 	return errors.New("maximum number of retries to change Lambda memory exceeded")
 }
 
