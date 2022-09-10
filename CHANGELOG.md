@@ -1,3 +1,10 @@
+# [0.5.0](https://github.com/janritter/aws-lambda-live-tuner/compare/0.4.1...0.5.0) (2022-09-10)
+
+
+### Features
+
+* **#14:** reset memory to pre-test value after canceling the tool with ctrl + c - resolves [#14](https://github.com/janritter/aws-lambda-live-tuner/issues/14) ([28b96e3](https://github.com/janritter/aws-lambda-live-tuner/commit/28b96e3ae8e14cb20cf55f8668fb2e2d5f388b81))
+
 ## [0.4.1](https://github.com/janritter/aws-lambda-live-tuner/compare/0.4.0...0.4.1) (2022-09-09)
 
 
