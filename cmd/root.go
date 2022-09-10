@@ -149,7 +149,7 @@ func init() {
 	rootCmd.PersistentFlags().IntVar(&memoryIncrement, "memory-increment", 64, "Increments for the memory configuration added to the min value until the max value is reached")
 	rootCmd.PersistentFlags().StringVar(&lambdaARN, "lambda-arn", "", "ARN of the Lambda function to optimize")
 	rootCmd.PersistentFlags().IntVar(&waitTime, "wait-time", 180, "Wait time in seconds between CloudWatch Log insights queries")
-	rootCmd.PersistentFlags().StringVar(&outputFilename, "output-filename", "", "Filename for the output csv")
+	rootCmd.PersistentFlags().StringVar(&outputFilename, "csv-output", "", "Filename for the output csv")
 }
 
 // initConfig reads in config file and ENV variables if set.
