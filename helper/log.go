@@ -30,3 +30,9 @@ func LogError(format string, args ...interface{}) {
 	log.Println("[ERROR] " + fmt.Sprintf(format, args...))
 	color.Unset()
 }
+
+func LogWarn(format string, args ...interface{}) {
+	color.Set(color.FgYellow)
+	log.Println("[WARN] " + fmt.Sprintf(format, args...))
+	color.Unset()
+}
