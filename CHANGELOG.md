@@ -1,3 +1,15 @@
+# [1.0.0](https://github.com/janritter/aws-lambda-live-tuner/compare/0.5.0...1.0.0) (2022-09-10)
+
+
+### Bug Fixes
+
+* **deps:** updated aws-sdk ([9b9b325](https://github.com/janritter/aws-lambda-live-tuner/commit/9b9b325a7aa489839c44f3e1fb47674f5d9df41f))
+
+
+### Features
+
+* **#15:** added price support for all AWS regions - resolves [#15](https://github.com/janritter/aws-lambda-live-tuner/issues/15) ([00575a4](https://github.com/janritter/aws-lambda-live-tuner/commit/00575a4b257aee907ee807ccc589db9e3810ab17))
+
 # [0.5.0](https://github.com/janritter/aws-lambda-live-tuner/compare/0.4.1...0.5.0) (2022-09-10)
 
 
