@@ -3,6 +3,8 @@ package cmd
 import (
 	"fmt"
 	"os"
+	"os/signal"
+	"syscall"
 	"time"
 
 	"github.com/aws/aws-sdk-go/aws/session"
@@ -51,6 +53,16 @@ var rootCmd = &cobra.Command{
 
 		helper.LogInfo("Memory value before test start: %d", lambda.PreTestMemory)
 		helper.LogInfo("Architecture of Lambda: %s", lambda.Architecture)
+
+		// Make sure the memory gets reset on ctrl+c
+		c := make(chan os.Signal)
+		signal.Notify(c, os.Interrupt, syscall.SIGTERM)
+		go func() {
+			<-c
+			helper.LogInfo("Execution canceled by user")
+			lambda.ResetMemory()
+			os.Exit(0)
+		}()
 
 		durationResults := make(map[int]float64)
 		costResults := make(map[int]float64)
