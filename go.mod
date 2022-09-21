@@ -3,12 +3,12 @@ module github.com/janritter/aws-lambda-live-tuner
 go 1.19
 
 require (
-	github.com/aws/aws-sdk-go v1.44.102
+	github.com/aws/aws-sdk-go v1.44.103
 	github.com/fatih/color v1.13.0
 	github.com/mitchellh/go-homedir v1.1.0
 	github.com/spf13/cobra v1.5.0
 	github.com/spf13/viper v1.13.0
-	golang.org/x/exp v0.0.0-20220921023135-46d9e7742f1e
+	golang.org/x/exp v0.0.0-20220921164117-439092de6870
 	golang.org/x/sync v0.0.0-20220907140024-f12130a52804
 )
 
