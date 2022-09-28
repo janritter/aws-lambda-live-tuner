@@ -1,3 +1,10 @@
+## [0.6.2](https://github.com/janritter/aws-lambda-live-tuner/compare/0.6.1...0.6.2) (2022-09-28)
+
+
+### Bug Fixes
+
+* **deps:** updated go dependencies and circleci orb ([08efd89](https://github.com/janritter/aws-lambda-live-tuner/commit/08efd89943887acd3ce4bb0854d4e809d0075438))
+
 ## [0.6.1](https://github.com/janritter/aws-lambda-live-tuner/compare/0.6.0...0.6.1) (2022-09-21)
 
 
