@@ -110,7 +110,7 @@ func getDurationFromMessage(message string) (float64, error) {
 }
 
 func getStartTimeDiff(waitTime int) int {
-	// We use the wait time multplied by 2 to not miss any invocations between checks
+	// We use the wait time multiplied by 2 to not miss any invocations between checks
 	wait := waitTime * 2
 
 	// Due to delay in CloudWatch ingestion we always use the last 5 minutes as the minimum time window
