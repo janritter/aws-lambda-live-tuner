@@ -31,6 +31,7 @@ var waitTime int
 var memoryIncrement int
 var lambdaARN string
 var outputFilename string
+var outputGraphConfig bool
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
@@ -122,6 +123,10 @@ var rootCmd = &cobra.Command{
 			output.WriteCSV(outputFilename, csvRecords)
 		}
 
+		if outputGraphConfig {
+			output.WriteGnuplotConfig(outputFilename, memoryIncrement, ((memoryMax - memoryMin) / memoryIncrement))
+		}
+
 		err = lambda.ResetMemory()
 		if err != nil {
 			os.Exit(1)
@@ -150,6 +155,7 @@ func init() {
 	rootCmd.PersistentFlags().StringVar(&lambdaARN, "lambda-arn", "", "ARN of the Lambda function to optimize")
 	rootCmd.PersistentFlags().IntVar(&waitTime, "wait-time", 180, "Wait time in seconds between CloudWatch Log insights queries")
 	rootCmd.PersistentFlags().StringVar(&outputFilename, "csv-output", "", "Filename for the output csv")
+	rootCmd.PersistentFlags().BoolVar(&outputGraphConfig, "graph-config", false, "Wether a gnuplot config should be generated, requires csv-output to be set")
 }
 
 // initConfig reads in config file and ENV variables if set.
@@ -185,4 +191,5 @@ func validateInputs() {
 	helper.ValidateMemoryMaxValue(memoryMax, memoryMin)
 	helper.ValidateMemoryIncrement(memoryIncrement)
 	helper.ValidateMinRequests(minRequests)
+	helper.ValidateGraphConifg(outputGraphConfig, outputFilename)
 }

@@ -51,3 +51,10 @@ func ValidateMinRequests(minRequests int) {
 		os.Exit(1)
 	}
 }
+
+func ValidateGraphConifg(graphConfig bool, csvFilename string) {
+	if graphConfig && csvFilename == "" {
+		log.Println("csv-output flag must be set when enabling graph-config")
+		os.Exit(1)
+	}
+}
