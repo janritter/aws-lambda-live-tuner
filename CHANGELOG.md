@@ -1,3 +1,16 @@
+# [0.7.0](https://github.com/janritter/aws-lambda-live-tuner/compare/0.6.2...0.7.0) (2022-10-17)
+
+
+### Bug Fixes
+
+* updated cobra and aws-sdk go packages ([db80d95](https://github.com/janritter/aws-lambda-live-tuner/commit/db80d95e63c869eab53e0579ad2af9ae7103a93a))
+
+
+### Features
+
+* added cost for additional arm regions ([9c02c35](https://github.com/janritter/aws-lambda-live-tuner/commit/9c02c35ca5ed6e007814a603fa9dca572f22c911))
+* added option to generate gnuplot config to graph results ([745bc89](https://github.com/janritter/aws-lambda-live-tuner/commit/745bc89bed2c7c0d96a7e740e0e6d42be1e2b127))
+
 ## [0.6.2](https://github.com/janritter/aws-lambda-live-tuner/compare/0.6.1...0.6.2) (2022-09-28)
 
 
