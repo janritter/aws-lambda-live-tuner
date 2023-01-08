@@ -1,3 +1,10 @@
+## [0.7.3](https://github.com/janritter/aws-lambda-live-tuner/compare/0.7.2...0.7.3) (2023-01-08)
+
+
+### Bug Fixes
+
+* rotated cosign key after CircleCI security incident and use github-release context ([51db0dd](https://github.com/janritter/aws-lambda-live-tuner/commit/51db0dd61fc79db2ec982999a21c41353f0f267f))
+
 ## [0.7.2](https://github.com/janritter/aws-lambda-live-tuner/compare/0.7.1...0.7.2) (2022-12-06)
 
 
