@@ -75,8 +75,18 @@ aws-lambda-live-tuner --lambda-arn arn:aws:lambda:eu-central-1:1234567890:functi
 ## Limitations
 
 - Lambda@Edge functions are currently not supported
+- Lambda function aliases are currently not supported
 - Lambda tiered pricing is not considered
   - Because we can't know in which Lambda pricing tier you are operating, we will always use Tier 1. Since higher tiers just reduce the GB/second price, the lowest price results will still be valid for you.
+
+## Development
+
+### Regenerate AWS SDK mocks for testing
+
+```bash
+mockery --all --dir vendor/github.com/aws/aws-sdk-go/service/cloudwatchlogs/cloudwatchlogsiface
+mockery --all --dir vendor/github.com/aws/aws-sdk-go/service/lambda/lambdaiface  
+```
 
 ## License and Author
 
