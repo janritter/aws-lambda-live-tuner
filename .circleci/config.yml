@@ -78,7 +78,7 @@ workflows:
                 - /test\/.*/
                 - /refactor\/.*/
                 - /perf\/.*/
-                - /dependabot\/.*/
+                - /renovate\/.*/
                 - main
       - semantic-release/with-changelog-github-config:
           name: semantic-release
