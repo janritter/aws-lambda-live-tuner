@@ -15,7 +15,7 @@ import (
 // Prevent conflicts when changing memory on the function
 var sem *semaphore.Weighted = semaphore.NewWeighted(int64(1))
 
-func (l *Lambda) ChangeMemory(memory int) error {
+func (l *Lambda) changeUnpublishedMemory(memory int) error {
 	sem.Acquire(context.Background(), int64(1))
 
 	retry := 0
@@ -52,7 +52,51 @@ func (l *Lambda) ChangeMemory(memory int) error {
 	return errors.New("maximum number of retries to change Lambda memory exceeded")
 }
 
-func (l *Lambda) ResetMemory() error {
+func (l *Lambda) ChangeMemory(memory int) error {
+	err := l.changeUnpublishedMemory(memory)
+	if err != nil {
+		return err
+	}
+
+	if l.Alias != "" {
+		helper.LogNotice("Creating new version of Lambda")
+		version, err := l.awsLambda.PublishVersion(&lambda.PublishVersionInput{
+			FunctionName: aws.String(l.Arn),
+		})
+		if err != nil {
+			helper.LogError("Failed to create new version: %s", err)
+			return err
+		}
+
+		helper.LogNotice("Changing Lambda alias %s to new version %s", l.Alias, *version.Version)
+		_, err = l.awsLambda.UpdateAlias(&lambda.UpdateAliasInput{
+			FunctionName:    aws.String(l.Arn),
+			FunctionVersion: version.Version,
+			Name:            aws.String(l.Alias),
+		})
+		if err != nil {
+			helper.LogError("Failed to change alias: %s", err)
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (l *Lambda) Reset() error {
+	if l.Alias != "" {
+		helper.LogNotice("Changing Lambda alias %s to pre-test version %s", l.Alias, l.PreTestVersion)
+		_, err := l.awsLambda.UpdateAlias(&lambda.UpdateAliasInput{
+			FunctionName:    aws.String(l.Arn),
+			FunctionVersion: aws.String(l.PreTestVersion),
+			Name:            aws.String(l.Alias),
+		})
+		if err != nil {
+			helper.LogError("Failed to change alias to pre-test version: %s", err)
+			return err
+		}
+	}
+
 	helper.LogNotice("Changing Lambda memory to pre-test value of %dMB", l.PreTestMemory)
 	err := l.ChangeMemory(l.PreTestMemory)
 	return err
