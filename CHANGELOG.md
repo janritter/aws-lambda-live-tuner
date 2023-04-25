@@ -1,3 +1,15 @@
+## [0.8.0](https://github.com/janritter/aws-lambda-live-tuner/compare/0.7.9...0.8.0) (2023-04-25)
+
+
+### Features
+
+* added support for Lambdas using an alias for traffic - resolves [#38](https://github.com/janritter/aws-lambda-live-tuner/issues/38) ([46de1d3](https://github.com/janritter/aws-lambda-live-tuner/commit/46de1d39a2d1f54d47740848e034f54d8b9593f0))
+
+
+### Bug Fixes
+
+* **deps:** updated go packages ([c5fac3a](https://github.com/janritter/aws-lambda-live-tuner/commit/c5fac3a1462803ab911e5879fa9b21474386c805))
+
 ## [0.7.9](https://github.com/janritter/aws-lambda-live-tuner/compare/0.7.8...0.7.9) (2023-04-05)
 
 
