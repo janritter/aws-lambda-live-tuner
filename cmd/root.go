@@ -32,6 +32,7 @@ var memoryIncrement int
 var lambdaARN string
 var outputFilename string
 var outputGraphConfig bool
+var alias string
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
@@ -47,7 +48,7 @@ var rootCmd = &cobra.Command{
 
 		analyzer := analyzer.NewAnalyzer(cloudwatchlogsSvc, lambdaARN, waitTime)
 
-		lambda, err := lambda.NewLambda(lambdaSvc, lambdaARN)
+		lambda, err := lambda.NewLambda(lambdaSvc, lambdaARN, alias)
 		if err != nil {
 			os.Exit(1)
 		}
@@ -61,7 +62,7 @@ var rootCmd = &cobra.Command{
 		go func() {
 			<-c
 			helper.LogInfo("Execution canceled by user")
-			lambda.ResetMemory()
+			lambda.Reset()
 			os.Exit(0)
 		}()
 
@@ -72,7 +73,7 @@ var rootCmd = &cobra.Command{
 
 			err := lambda.ChangeMemory(memory)
 			if err != nil {
-				lambda.ResetMemory()
+				lambda.Reset()
 				os.Exit(1)
 			}
 
@@ -80,7 +81,7 @@ var rootCmd = &cobra.Command{
 			for len(invocations) < minRequests {
 				newInvocations, err := analyzer.CheckInvocations(memory)
 				if err != nil {
-					lambda.ResetMemory()
+					lambda.Reset()
 					os.Exit(1)
 				}
 
@@ -127,7 +128,7 @@ var rootCmd = &cobra.Command{
 			output.WriteGnuplotConfig(outputFilename, memoryIncrement, ((memoryMax - memoryMin) / memoryIncrement))
 		}
 
-		err = lambda.ResetMemory()
+		err = lambda.Reset()
 		if err != nil {
 			os.Exit(1)
 		}
@@ -156,6 +157,7 @@ func init() {
 	rootCmd.PersistentFlags().IntVar(&waitTime, "wait-time", 180, "Wait time in seconds between CloudWatch Log insights queries")
 	rootCmd.PersistentFlags().StringVar(&outputFilename, "csv-output", "", "Filename for the output csv")
 	rootCmd.PersistentFlags().BoolVar(&outputGraphConfig, "graph-config", false, "Wether a gnuplot config should be generated, requires csv-output to be set")
+	rootCmd.PersistentFlags().StringVar(&alias, "alias", "", "When an alias is used to receive real traffic, the alias name must be provided. Make sure your unpublished function ($LATEST) is configured in a way that it can handle the real traffic (code and configuration).")
 }
 
 // initConfig reads in config file and ENV variables if set.
