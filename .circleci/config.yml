@@ -1,7 +1,7 @@
 version: 2.1
 
 orbs:
-  semantic-release: trustedshops-public/semantic-release@4.0.1
+  semantic-release: trustedshops-public/semantic-release@5.1.1
 
 jobs:
   test:
@@ -80,7 +80,7 @@ workflows:
                 - /perf\/.*/
                 - /renovate\/.*/
                 - main
-      - semantic-release/with-changelog-github-config:
+      - semantic-release/with_changelog_github_config:
           name: semantic-release
           requires:
             - test
