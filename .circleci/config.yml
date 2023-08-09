@@ -6,7 +6,7 @@ orbs:
 jobs:
   test:
     docker:
-      - image: cimg/go:1.20
+      - image: cimg/go:1.21
     working_directory: ~/go/src/github.com/janritter/aws-lambda-live-tuner
     steps:
       - checkout
@@ -40,7 +40,7 @@ jobs:
 
   build-release:
     docker:
-      - image: cimg/go:1.20
+      - image: cimg/go:1.21
     working_directory: ~/go/src/github.com/janritter/aws-lambda-live-tuner
     steps:
       - checkout
