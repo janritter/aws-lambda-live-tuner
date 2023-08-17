@@ -84,8 +84,7 @@ aws-lambda-live-tuner --lambda-arn arn:aws:lambda:eu-central-1:1234567890:functi
 ### Regenerate AWS SDK mocks for testing
 
 ```bash
-mockery --all --dir vendor/github.com/aws/aws-sdk-go/service/cloudwatchlogs/cloudwatchlogsiface
-mockery --all --dir vendor/github.com/aws/aws-sdk-go/service/lambda/lambdaiface  
+mockery
 ```
 
 ## License and Author
