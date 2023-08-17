@@ -3,7 +3,7 @@ package analyzer
 import (
 	"testing"
 
-	"github.com/janritter/aws-lambda-live-tuner/mocks"
+	"github.com/janritter/aws-lambda-live-tuner/mocks/github.com/aws/aws-sdk-go/service/cloudwatchlogs/cloudwatchlogsiface"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -16,7 +16,7 @@ func TestGetFunctionNameFromARN(t *testing.T) {
 }
 
 func TestNewLambda(t *testing.T) {
-	cloudwatch := new(mocks.CloudWatchLogsAPI)
+	cloudwatch := new(cloudwatchlogsiface.MockCloudWatchLogsAPI)
 
 	service := NewAnalyzer(cloudwatch, "arn:aws:test", 0)
 

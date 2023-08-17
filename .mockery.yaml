@@ -1,0 +1,9 @@
+packages:
+    github.com/aws/aws-sdk-go/service/cloudwatchlogs/cloudwatchlogsiface:
+        config:
+            recursive: true
+            all: True
+    github.com/aws/aws-sdk-go/service/lambda/lambdaiface:
+        config:
+            recursive: true
+            all: True

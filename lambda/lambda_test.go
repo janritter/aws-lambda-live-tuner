@@ -7,18 +7,18 @@ import (
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/awserr"
 	"github.com/aws/aws-sdk-go/service/lambda"
-	"github.com/janritter/aws-lambda-live-tuner/mocks"
+	"github.com/janritter/aws-lambda-live-tuner/mocks/github.com/aws/aws-sdk-go/service/lambda/lambdaiface"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 )
 
 // Returns a mocked Lambda struct and the mocked AWS Lambda API
-func getMockLambda() (*Lambda, *mocks.LambdaAPI) {
+func getMockLambda() (*Lambda, *lambdaiface.MockLambdaAPI) {
 	testARN := "arn:aws:test"
 	testArchitecture := "x86_64"
 	testMemorySize := 256
 
-	awsLambda := new(mocks.LambdaAPI)
+	awsLambda := new(lambdaiface.MockLambdaAPI)
 	awsLambda.On("GetFunctionConfiguration", mock.AnythingOfType("*lambda.GetFunctionConfigurationInput")).Return(&lambda.FunctionConfiguration{
 		Architectures: []*string{aws.String(testArchitecture)},
 		MemorySize:    aws.Int64(int64(testMemorySize)),
@@ -33,12 +33,12 @@ func getMockLambda() (*Lambda, *mocks.LambdaAPI) {
 	return mockLambda, awsLambda
 }
 
-func getMockLambdaAlias() (*Lambda, *mocks.LambdaAPI) {
+func getMockLambdaAlias() (*Lambda, *lambdaiface.MockLambdaAPI) {
 	testARN := "arn:aws:test"
 	testArchitecture := "x86_64"
 	testMemorySize := 256
 
-	awsLambda := new(mocks.LambdaAPI)
+	awsLambda := new(lambdaiface.MockLambdaAPI)
 	awsLambda.On("GetFunctionConfiguration", mock.AnythingOfType("*lambda.GetFunctionConfigurationInput")).Return(&lambda.FunctionConfiguration{
 		Architectures: []*string{aws.String(testArchitecture)},
 		MemorySize:    aws.Int64(int64(testMemorySize)),
