@@ -1,7 +1,7 @@
 version: 2.1
 
 orbs:
-  semantic-release: trustedshops-public/semantic-release@5.1.1
+  semantic-release: trustedshops-public/semantic-release@6.0.0
 
 jobs:
   test:
