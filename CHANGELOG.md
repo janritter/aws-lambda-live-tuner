@@ -1,3 +1,10 @@
+## [0.8.4](https://github.com/janritter/aws-lambda-live-tuner/compare/0.8.3...0.8.4) (2023-12-29)
+
+
+### Bug Fixes
+
+* **deps:** update semantic-release orb to v6 ([23361d2](https://github.com/janritter/aws-lambda-live-tuner/commit/23361d278097bc148495774b8038647bb0abcd05))
+
 ## [0.8.3](https://github.com/janritter/aws-lambda-live-tuner/compare/0.8.2...0.8.3) (2023-10-14)
 
 
