@@ -1,3 +1,10 @@
+## [0.8.6](https://github.com/janritter/aws-lambda-live-tuner/compare/0.8.5...0.8.6) (2024-02-15)
+
+
+### Bug Fixes
+
+* **deps:** update minor go packages ([3b10034](https://github.com/janritter/aws-lambda-live-tuner/commit/3b100349c831026e1089a9f7fc5f98ae1b7fed73))
+
 ## [0.8.5](https://github.com/janritter/aws-lambda-live-tuner/compare/0.8.4...0.8.5) (2023-12-29)
 
 
