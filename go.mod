@@ -3,13 +3,13 @@ module github.com/janritter/aws-lambda-live-tuner
 go 1.21
 
 require (
-	github.com/aws/aws-sdk-go v1.50.19
+	github.com/aws/aws-sdk-go v1.51.9
 	github.com/fatih/color v1.16.0
 	github.com/mitchellh/go-homedir v1.1.0
 	github.com/spf13/cobra v1.8.0
 	github.com/spf13/viper v1.18.2
-	github.com/stretchr/testify v1.8.4
-	golang.org/x/exp v0.0.0-20240213143201-ec583247a57a
+	github.com/stretchr/testify v1.9.0
+	golang.org/x/exp v0.0.0-20240325151524-a685a6edb6d8
 	golang.org/x/sync v0.6.0
 )
 
@@ -31,7 +31,7 @@ require (
 	github.com/spf13/afero v1.11.0 // indirect
 	github.com/spf13/cast v1.6.0 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
-	github.com/stretchr/objx v0.5.1 // indirect
+	github.com/stretchr/objx v0.5.2 // indirect
 	github.com/subosito/gotenv v1.6.0 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
 	golang.org/x/sys v0.15.0 // indirect
