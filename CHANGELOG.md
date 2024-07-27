@@ -1,3 +1,10 @@
+## [0.8.9](https://github.com/janritter/aws-lambda-live-tuner/compare/0.8.8...0.8.9) (2024-07-27)
+
+
+### Bug Fixes
+
+* trigger new release after cosign fix ([0d98a33](https://github.com/janritter/aws-lambda-live-tuner/commit/0d98a33f3f0bfe07a9f5b89c8f5a7d62e9a1a5f7))
+
 ## [0.8.8](https://github.com/janritter/aws-lambda-live-tuner/compare/0.8.7...0.8.8) (2024-07-27)
 
 
