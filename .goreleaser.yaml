@@ -38,5 +38,5 @@ signs:
   - cmd: cosign
     stdin: "{{ .Env.COSIGN_PWD }}"
     args:
-      ["sign-blob", "--key=cosign.key", "--output-signature=${signature}", "${artifact}"]
+      ["sign-blob", "--key=cosign.key", "--output-signature=${signature}", "--tlog-upload=false", "${artifact}"]
     artifacts: all
