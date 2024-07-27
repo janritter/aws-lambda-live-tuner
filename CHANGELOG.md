@@ -1,3 +1,10 @@
+## [0.8.10](https://github.com/janritter/aws-lambda-live-tuner/compare/0.8.9...0.8.10) (2024-07-27)
+
+
+### Bug Fixes
+
+* **cosign:** enable transparency log for cosign ([2a0b62d](https://github.com/janritter/aws-lambda-live-tuner/commit/2a0b62db1517d1f282e785c14b8986b684ac81d3))
+
 ## [0.8.9](https://github.com/janritter/aws-lambda-live-tuner/compare/0.8.8...0.8.9) (2024-07-27)
 
 
