@@ -1,12 +1,12 @@
 version: 2.1
 
 orbs:
-  semantic-release: trustedshops-public/semantic-release@6.0.0
+  semantic-release: trustedshops-public/semantic-release@6.1.0
 
 jobs:
   test:
     docker:
-      - image: cimg/go:1.23
+      - image: cimg/go:1.25
     working_directory: ~/go/src/github.com/janritter/aws-lambda-live-tuner
     steps:
       - checkout
@@ -40,7 +40,7 @@ jobs:
 
   build-release:
     docker:
-      - image: cimg/go:1.23
+      - image: cimg/go:1.25
     working_directory: ~/go/src/github.com/janritter/aws-lambda-live-tuner
     steps:
       - checkout
