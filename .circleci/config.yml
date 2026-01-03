@@ -40,7 +40,7 @@ jobs:
       - run:
           name: Install goreleaser and cosign
           command: |
-            go install github.com/goreleaser/goreleaser@latest
+            go install github.com/goreleaser/goreleaser/v2@latest
             wget https://github.com/sigstore/cosign/releases/download/v3.0.3/cosign-linux-amd64
             sudo mv cosign-linux-amd64 /usr/bin/cosign && sudo chmod +x /usr/bin/cosign
       - run:
