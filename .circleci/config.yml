@@ -1,20 +1,15 @@
 version: 2.1
 
 orbs:
-  semantic-release: trustedshops-public/semantic-release@6.0.0
+  semantic-release: trustedshops-public/semantic-release@6.1.0
 
 jobs:
   test:
     docker:
-      - image: cimg/go:1.23
+      - image: cimg/go:1.25
     working_directory: ~/go/src/github.com/janritter/aws-lambda-live-tuner
     steps:
       - checkout
-      - run:
-          name: Install CodeClimate reporter
-          command: |
-            curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
-            chmod +x ./cc-test-reporter
       - run:
           name: Install dependencies
           command: |
@@ -28,9 +23,7 @@ jobs:
           name: Run tests
           command: |
             PACKAGE_NAMES=$(go list ./... | circleci tests split --split-by=timings --timings-type=classname)
-            ./cc-test-reporter before-build
             gotestsum --junitfile /tmp/test-results/gotestsum-report.xml -- -coverprofile=c.out $PACKAGE_NAMES
-             ./cc-test-reporter after-build --exit-code $?
             go tool cover -html=c.out -o coverage.html
             mv coverage.html /tmp/artifacts
       - store_artifacts:
@@ -40,7 +33,7 @@ jobs:
 
   build-release:
     docker:
-      - image: cimg/go:1.23
+      - image: cimg/go:1.25
     working_directory: ~/go/src/github.com/janritter/aws-lambda-live-tuner
     steps:
       - checkout

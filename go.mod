@@ -1,8 +1,6 @@
 module github.com/janritter/aws-lambda-live-tuner
 
-go 1.22.0
-
-toolchain go1.23.4
+go 1.25
 
 require (
 	github.com/aws/aws-sdk-go v1.55.5
