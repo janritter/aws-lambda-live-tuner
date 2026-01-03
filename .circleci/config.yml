@@ -41,7 +41,7 @@ jobs:
           name: Install goreleaser and cosign
           command: |
             go install github.com/goreleaser/goreleaser@latest
-            wget https://github.com/sigstore/cosign/releases/download/v2.3.0/cosign-linux-amd64
+            wget https://github.com/sigstore/cosign/releases/download/v3.0.3/cosign-linux-amd64
             sudo mv cosign-linux-amd64 /usr/bin/cosign && sudo chmod +x /usr/bin/cosign
       - run:
           name: Get latest master version, which includes the git tag from the semantic-release step
