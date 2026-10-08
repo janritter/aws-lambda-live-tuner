@@ -45,7 +45,7 @@ signs:
     args:
       - "sign-blob"
       - "--key=cosign.key"
-      - "--output-signature=${signature}"
+      - "--bundle=${signature}"
       - "--yes=true"
       - "${artifact}"
     artifacts: all
