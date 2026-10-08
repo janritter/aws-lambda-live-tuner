@@ -1,3 +1,10 @@
+## [0.10.1](https://github.com/janritter/aws-lambda-live-tuner/compare/0.10.0...0.10.1) (2026-10-08)
+
+### Bug Fixes
+
+* migrate deprecated goreleaser brews to homebrew_casks ([dae33d6](https://github.com/janritter/aws-lambda-live-tuner/commit/dae33d6b84c05fca194e500f3a2574feda710204))
+* use cosign --bundle flag for cosign v3 signing ([1c2b0b0](https://github.com/janritter/aws-lambda-live-tuner/commit/1c2b0b0849cead9adb7aa5d7171a72c94adb54f5))
+
 ## [0.10.0](https://github.com/janritter/aws-lambda-live-tuner/compare/0.9.0...0.10.0) (2026-10-08)
 
 ### Features
