@@ -32,6 +32,8 @@ brew tap janritter/aws-lambda-live-tuner https://github.com/janritter/aws-lambda
 brew install aws-lambda-live-tuner
 ```
 
+> **Note:** The Homebrew package is now published as a cask instead of a formula. If you installed the formula before, run `brew uninstall aws-lambda-live-tuner` and install it again with the commands above.
+
 ### Via download of pre-build binaries
 
 1. Open the [latest release page](https://github.com/janritter/aws-lambda-live-tuner/releases/latest)
