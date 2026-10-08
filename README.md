@@ -20,17 +20,19 @@ This project is heavily inspired by the open source tool [aws-lambda-power-tunin
 
 ### Via Homebrew (For Mac / Linux)
 
-#### Get the formula
+#### Get the cask
 
 ```bash
 brew tap janritter/aws-lambda-live-tuner https://github.com/janritter/aws-lambda-live-tuner
 ```
 
-#### Install formula
+#### Install cask
 
 ```bash
 brew install aws-lambda-live-tuner
 ```
+
+> **Note:** The Homebrew package is now published as a cask instead of a formula. If you installed the formula before, run `brew uninstall aws-lambda-live-tuner` and install it again with the commands above.
 
 ### Via download of pre-build binaries
 
