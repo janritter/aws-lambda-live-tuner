@@ -1,3 +1,13 @@
+## [0.10.0](https://github.com/janritter/aws-lambda-live-tuner/compare/0.9.0...0.10.0) (2026-10-08)
+
+### Features
+
+* updated to go 1.27 ([12fde17](https://github.com/janritter/aws-lambda-live-tuner/commit/12fde17bfd5abe27ed4d9fdfe8f6e6640c85bc9d))
+
+### Bug Fixes
+
+* **deps:** update minor go packages ([9cb05a4](https://github.com/janritter/aws-lambda-live-tuner/commit/9cb05a4899b8348030d2bc46c1172d5d77dfac4b))
+
 ## [0.9.0](https://github.com/janritter/aws-lambda-live-tuner/compare/0.8.11...0.9.0) (2026-01-03)
 
 ### Features
